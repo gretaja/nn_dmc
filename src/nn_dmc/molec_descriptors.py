@@ -20,7 +20,9 @@ def unsorted_CM(molecule_coords, atomic_numbers, full=False, revised=False):
     Parameters:
     molecule_coords (np.ndarray): An array of shape (n_molecules, n_atoms, 3) containing the Cartesian coordinates.
     atomic_numbers (np.ndarray): An array of shape (n_atoms,) containing the atomic numbers.
-    full (Boolean): True if you want the full Coulomb matrix returned instead of just the lower triangle
+    full (Boolean): True if you want the full Coulomb matrix returned instead of just the lower triangle.
+    revised (Boolean): True if you want the diagonal elements to be just the nuclear charges, and the
+                        off-diagonal terms to be the inverse distances between pairs of atoms.
 
     Returns:
     np.ndarray: An array of lower triangles of the unsorted coulomb matrices of shape (n_molecules, (n_atoms x n_atoms-1)/2).
@@ -73,7 +75,10 @@ def molec_sorted_CM(molecule_coords, atomic_numbers, groups, full=False, revised
     Parameters:
     molecule_coords (np.ndarray): An array of shape (n_molecules, n_atoms, 3) containing the Cartesian coordinates.
     atomic_numbers (np.ndarray): An array of shape (n_atoms,) containing the atomic numbers.
-    groups (list): A list of lists containing the groupings of atoms in molecular fragments
+    groups (list): A list of lists containing the groupings of atoms in molecular fragments.
+    full (Boolean): True if you want the full Coulomb matrix returned instead of just the lower triangle.
+    revised (Boolean): True if you want the diagonal elements to be just the nuclear charges, and the
+                        off-diagonal terms to be the inverse distances between pairs of atoms.
 
     Returns:
     np.ndarray: An array of input features for the nn model of shape (n_molecules, (n_atoms x n_atoms-1)/2).
@@ -121,7 +126,10 @@ def molec_atom_sorted_CM(molecule_coords, atomic_numbers, groups, full=False, re
     Parameters:
     molecule_coords (np.ndarray): An array of shape (n_molecules, n_atoms, 3) containing the Cartesian coordinates.
     atomic_numbers (np.ndarray): An array of shape (n_atoms,) containing the atomic numbers.
-    groups (list): A list of lists containing the groupings of atoms in molecular fragments
+    groups (list): A list of lists containing the groupings of atoms in molecular fragments.
+    full (Boolean): True if you want the full Coulomb matrix returned instead of just the lower triangle.
+    revised (Boolean): True if you want the diagonal elements to be just the nuclear charges, and the
+                        off-diagonal terms to be the inverse distances between pairs of atoms.
 
     Returns:
     np.ndarray: An array of input features for the nn model of shape (n_molecules, (n_atoms x n_atoms-1)/2).
@@ -171,12 +179,17 @@ def molec_atom_sorted_CM(molecule_coords, atomic_numbers, groups, full=False, re
 
 def select_molec_atom_sorted_CM(molecule_coords, atomic_numbers, groups, select_groups, full=False, revised=False):
     """
-    Calculate the lower triangle of the molec. + atom sorted Coulomb matrix for a set of structures.
+    Calculate the lower triangle of the molec. + atom sorted Coulomb matrix for a set of structures,
+    only considering permutationally invarient molecules.
     
     Parameters:
     molecule_coords (np.ndarray): An array of shape (n_molecules, n_atoms, 3) containing the Cartesian coordinates.
     atomic_numbers (np.ndarray): An array of shape (n_atoms,) containing the atomic numbers.
-    groups (list): A list of lists containing the groupings of atoms in molecular fragments
+    groups (list): A list of lists containing the groupings of atoms in molecular fragments.
+    select_groups (list): A list of indices for the groups that are to be considered in sorting, ex. [0,2].
+    full (Boolean): True if you want the full Coulomb matrix returned instead of just the lower triangle.
+    revised (Boolean): True if you want the diagonal elements to be just the nuclear charges, and the
+                        off-diagonal terms to be the inverse distances between pairs of atoms.
 
     Returns:
     np.ndarray: An array of input features for the nn model of shape (n_molecules, (n_atoms x n_atoms-1)/2).
@@ -227,6 +240,9 @@ def atom_sorted_CM(molecule_coords,atomic_numbers, full=False, revised=False):
     Parameters:
     molecule_coords (np.ndarray): An array of shape (n_molecules, n_atoms, 3) containing the Cartesian coordinates.
     atomic_numbers (np.ndarray): An array of shape (n_atoms,) containing the atomic numbers.
+    full (Boolean): True if you want the full Coulomb matrix returned instead of just the lower triangle.
+    revised (Boolean): True if you want the diagonal elements to be just the nuclear charges, and the
+                        off-diagonal terms to be the inverse distances between pairs of atoms.
 
     Returns:
     np.ndarray: An array of input features for the nn model of shape (n_molecules, (n_atoms x n_atoms-1)/2).
