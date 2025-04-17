@@ -4,10 +4,19 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torch.nn.functional as F
 from torch.utils.data import DataLoader, TensorDataset, random_split
+import torch.multiprocessing as mp
 
 import numpy as np
 
 from nn_dmc import *
+
+# Set the number of CPU threads and multiprocessing method
+torch.set_num_threads(6)
+
+try:
+    mp.set_start_method("spawn", force=True)  # Use fork instead of spawn (better for CUDA)
+except RuntimeError:
+    pass  # Fork may not work in some environments; ignore if it's already set.
 
 assert torch.cuda.is_available(), "GPU is not available, check the directions above (or disable this assertion to use CPU)"
 
@@ -210,7 +219,7 @@ for epoch in range(num_epochs):
             print('Learning rate less than threshold, stopping training')
             break
 
-torch.save(model.state_dict(),f'{system_name}_NN_model_{hidden}hidden_{decay}_decay_{descriptor}.pth')
+torch.save(model.state_dict(),f'{system_name}_nn_model_{descriptor}_{hidden}hidden_{decay}_decay_bn.pth')
 
 losses = np.array([loss_list,train_MAE_list,val_loss_list,test_loss_list])
-np.save(f'{system_name}_NN_model_{hidden}hidden_{decay}_decay_{descriptor}_learning_curve.npy', losses)
+np.save(f'{system_name}_nn_model_{descriptor}_{hidden}hidden_{decay}_decay_bn_learning_curve.npy', losses)
