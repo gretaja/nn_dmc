@@ -165,3 +165,211 @@ def plot_log_stats(file_path,ymax=None):
     if ymax != None:
         plt.ylim(0,ymax)
     plt.show()
+
+
+def plot_1d_dists(data_path,dist_type,atom_indices,name,cumulative=False,bins=None,xlims=None,ylims=None,stats=False):
+    cds = np.load(f'{data_path}_cds.npy')
+    cds = pv.Constants.convert(cds,'angstroms',to_AU=False) # Conversion of cds to angstroms
+    dws = np.load(f'{data_path}_dws.npy')
+
+    analyzer = pv.AnalyzeWfn(cds)
+
+    dist_total = []
+    dws_total = []
+
+    for i in range(len(atom_indices)):
+
+        if dist_type == 'bond_length':
+            dist = analyzer.bond_length(atom_indices[i][0],atom_indices[i][1])
+            x_label_end = 'Distance ($\AA$)'
+        elif dist_type == 'bond_angle':
+            dist = analyzer.bond_angle(atom_indices[i][0],atom_indices[i][1],atom_indices[i][2])
+            dist = np.rad2deg(dist)
+            x_label_end = 'Angle (degrees)'
+        elif dist_type == 'dihedral':
+            dist = analyzer.dihedral(atom_indices[i][0],atom_indices[i][1],atom_indices[i][2],atom_indices[i][3])
+            dist = np.rad2deg(dist)
+            x_label_end = 'Angle (degrees)'
+        else:
+            return TypeError('Not a valid distribution type')
+        
+        if cumulative == False:
+            if bins == None:
+                n, bin = np.histogram(dist,weights = dws, bins = 100, density = True)
+            else:
+                n, bin = np.histogram(dist,weights = dws, bins = bins, density = True)
+
+            bin_centers = (bin[:-1] + bin[1:]) / 2
+
+            plt.plot(bin_centers, n, label = f'{atom_indices[i][0]}-{atom_indices[i][1]}')
+
+        else:
+            dist_total.append(dist)
+            dws_total.append(dws)
+
+    if cumulative == True:
+
+        dist_total = np.concatenate(dist_total)
+        dws_total = np.concatenate(dws_total)
+
+        if bins == None:
+            n, bin = np.histogram(dist_total,weights = dws_total, bins = 100, density = True)
+        else:
+            n, bin = np.histogram(dist_total,weights = dws_total, bins = bins, density = True)
+
+        bin_centers = (bin[:-1] + bin[1:]) / 2
+
+        plt.plot(bin_centers, n)
+
+    if xlims != None:
+        plt.xlim(xlims[0],xlims[1])
+
+    if ylims != None:
+        plt.ylim(ylims[0],ylims[1])
+
+    plt.legend()
+    plt.xlabel(rf'{name} {x_label_end}')
+    plt.ylabel('Probability Amplitude')
+    
+    plt.show()
+    plt.clf()
+
+def plot_mult_dists(systems,data_paths,dist_type,atom_indices,name,
+                    cumulative=False,bins=None,xlims=None,ylims=None,colors=None,linestyles=None):
+    for p in range(len(systems)):
+        cds = np.load(f'{data_paths[p]}_cds.npy')
+        cds = pv.Constants.convert(cds,'angstroms',to_AU=False) # Conversion of cds to angstroms
+        dws = np.load(f'{data_paths[p]}_dws.npy')
+
+        analyzer = pv.AnalyzeWfn(cds)
+
+        dist_total = []
+        dws_total = []
+
+        for i in range(len(atom_indices[p])):
+
+            if dist_type == 'bond_length':
+                dist = analyzer.bond_length(atom_indices[p][i][0],atom_indices[p][i][1])
+                x_label_end = 'Distance ($\AA$)'
+            elif dist_type == 'bond_angle':
+                dist = analyzer.bond_angle(atom_indices[p][i][0],atom_indices[p][i][1],atom_indices[i][2])
+                dist = np.rad2deg(dist)
+                x_label_end = 'Angle (degrees)'
+            elif dist_type == 'dihedral':
+                dist = analyzer.dihedral(atom_indices[p][i][0],atom_indices[p][i][1],atom_indices[i][2],atom_indices[i][3])
+                dist = np.rad2deg(dist)
+                x_label_end = 'Angle (degrees)'
+            else:
+                return TypeError('Not a valid distribution type')
+            
+            if cumulative == False:
+                if bins == None:
+                    n, bin = np.histogram(dist,weights = dws, bins = 100, density = True)
+                else:
+                    n, bin = np.histogram(dist,weights = dws, bins = bins, density = True)
+
+                bin_centers = (bin[:-1] + bin[1:]) / 2
+
+                plt.plot(bin_centers, n, label = f'{systems[p]}: {atom_indices[p][i][0]}-{atom_indices[p][i][1]}')
+
+            else:
+                dist_total.append(dist)
+                dws_total.append(dws)
+
+        if cumulative == True:
+
+            dist_total = np.concatenate(dist_total)
+            dws_total = np.concatenate(dws_total)
+
+            if bins == None:
+                n, bin = np.histogram(dist_total,weights = dws_total, bins = 100, density = True)
+            else:
+                n, bin = np.histogram(dist_total,weights = dws_total, bins = bins, density = True)
+
+            bin_centers = (bin[:-1] + bin[1:]) / 2
+
+            if colors == None:
+                if linestyles == None:
+                    plt.plot(bin_centers, n, label=f'{systems[p]}')
+                else:
+                    plt.plot(bin_centers, n, label=f'{systems[p]}',linestyle=linestyles[p])
+            else:
+                if linestyles == None:
+                    plt.plot(bin_centers, n, label=f'{systems[p]}',color=colors[p])
+                else:
+                    plt.plot(bin_centers, n, label=f'{systems[p]}',color=colors[p],linestyle=linestyles[p])
+
+    if xlims != None:
+        plt.xlim(xlims[0],xlims[1])
+
+    if ylims != None:
+        plt.ylim(ylims[0],ylims[1])
+
+    plt.legend(frameon=False)
+    plt.xlabel(rf'{name} {x_label_end}')
+    plt.ylabel('Probability Amplitude')
+    
+    plt.show()
+    plt.clf()
+
+def calc_dist_stats(data_paths,dist_type,atom_indices):
+
+    exp_list = []
+    fwhm_list = []
+
+    for p in range(len(data_paths)):
+
+        cds = np.load(f'{data_paths[p]}_cds.npy')
+        cds = pv.Constants.convert(cds,'angstroms',to_AU=False) # Conversion of cds to angstroms
+        dws = np.load(f'{data_paths[p]}_dws.npy')
+
+        analyzer = pv.AnalyzeWfn(cds)
+
+        dist_total = []
+        dws_total = []
+        for i in range(len(atom_indices)):
+
+            if dist_type == 'bond_length':
+                dist = analyzer.bond_length(atom_indices[i][0],atom_indices[i][1])
+            elif dist_type == 'bond_angle':
+                dist = analyzer.bond_angle(atom_indices[i][0],atom_indices[i][1],atom_indices[i][2])
+                dist = np.rad2deg(dist)
+            elif dist_type == 'dihedral':
+                dist = analyzer.dihedral(atom_indices[i][0],atom_indices[i][1],atom_indices[i][2],atom_indices[i][3])
+                dist = np.rad2deg(dist)
+            else:
+                return TypeError('Not a valid distribution type')
+            
+            dist_total.append(dist)
+            dws_total.append(dws)
+
+        dist_total = np.concatenate(dist_total)
+        dws_total = np.concatenate(dws_total)
+
+        total_exp_val = analyzer.exp_val(operator=dist_total, dw=dws_total)
+        exp_list.append(total_exp_val)
+
+        n, bins = np.histogram(dist_total,bins=100,weights=dws_total,density=True)
+        # Step 2: Find the peak of the histogram
+        max_bin_height = np.max(n)
+        max_bin_index = np.argmax(n)
+
+        # Step 3: Calculate the half maximum
+        half_max = max_bin_height / 2.0
+
+        bin_centers = (bins[:-1] + bins[1:]) / 2
+
+        # Find left crossing point
+        left_index = np.where(n[:max_bin_index] < half_max)[0][-1]
+        left_half_max_x = bin_centers[left_index] + (half_max - n[left_index]) * (bin_centers[left_index + 1] - bin_centers[left_index]) / (n[left_index + 1] - n[left_index])
+
+        # Find right crossing point
+        right_index = np.where(n[max_bin_index:] < half_max)[0][0] + max_bin_index
+        right_half_max_x = bin_centers[right_index - 1] + (half_max - n[right_index - 1]) * (bin_centers[right_index] - bin_centers[right_index - 1]) / (n[right_index] - n[right_index - 1])
+
+        # Step 5: Calculate the FWHM
+        fwhm = right_half_max_x - left_half_max_x
+        fwhm_list.append(fwhm)
+
+    return np.mean(exp_list), np.std(exp_list), np.mean(fwhm_list), np.std(fwhm_list)
+        
