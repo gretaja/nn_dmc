@@ -278,7 +278,7 @@ def standardize_inputs(X_path):
     Saves .npy files for the standardized data, means, and standard deviations, 
     given the path to the input data of interest (.npy file)
     """
-    X_data = np.load(f'{X_path}.npy')
+    X_data = np.load(f'{X_path}')
 
     means = np.mean(X_data,axis=0)
     stds = np.std(X_data,axis=0)
