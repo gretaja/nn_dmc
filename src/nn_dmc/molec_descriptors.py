@@ -272,3 +272,20 @@ def atom_sorted_CM(molecule_coords,atomic_numbers, full=False, revised=False):
     
     else:
         return lower_triangles
+    
+def standardize_inputs(X_path):
+    """
+    Saves .npy files for the standardized data, means, and standard deviations, 
+    given the path to the input data of interest (.npy file)
+    """
+    X_data = np.load(f'{X_path}.npy')
+
+    means = np.mean(X_data,axis=0)
+    stds = np.std(X_data,axis=0)
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        standard_X_data = (X_data - means)/stds
+
+    np.save(f'{X_path}_means.npy',means)
+    np.save(f'{X_path}_stds.npy',stds)
+    np.save(f'{X_path}_standardized.npy',standard_X_data)
