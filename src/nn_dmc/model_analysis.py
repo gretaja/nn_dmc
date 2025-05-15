@@ -27,6 +27,14 @@ def calc_nn_test_errors(system,model,x_data,y_data):
         input_size = 6
         hidden_size = 60
 
+    elif system == 'h11o6':
+        input_size = 136
+        hidden_size = 450
+
+    elif system == 'h2o':
+        input_size = 3
+        hidden_size = 30
+
     else:
         raise ValueError('not a valid system name')
 
@@ -99,6 +107,18 @@ def plot_2d_pred_errors(system,model,x_data,y_data):
         bin_height = 15
         xlim = 10000
         ylim = 250
+
+    elif system == 'h11o6':
+        bin_width = 1400
+        bin_height = 120
+        xlim = 60000
+        ylim = 2000
+
+    elif system == 'h2o':
+        bin_width = 225
+        bin_height = 10
+        xlim = 9000
+        ylim = 150
 
     else:
         raise ValueError('not a valid system name')
