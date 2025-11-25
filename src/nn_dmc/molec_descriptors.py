@@ -277,6 +277,7 @@ def atom_sorted_CM(molecule_coords,atomic_numbers, full=False, revised=False):
     else:
         return lower_triangles
     
+<<<<<<< HEAD
 def determine_molecule_groups(coords, atom_types, tolerance=0.7):
     """
     Determine molecular groupings using a fixed covalent radius heuristic for O/H atoms only.
@@ -498,11 +499,13 @@ def molec_atom_sorted_CM_new(molecule_coords, atomic_numbers, atom_types, full=F
 
     return sorted_CMs if full else lower_triangles
     
+
 def standardize_inputs(X_path):
     """
     Saves .npy files for the standardized data, means, and standard deviations, 
     given the path to the input data of interest (.npy file)
     """
+
     X_data = np.load(f'{X_path}.npy')
 
     means = np.mean(X_data,axis=0)

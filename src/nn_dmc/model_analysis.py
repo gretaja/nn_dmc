@@ -137,6 +137,18 @@ def plot_2d_pred_errors(system,model,x_data,y_data):
         ylim = 150
         x_ticks = None
 
+    elif system == 'h11o6':
+        bin_width = 1400
+        bin_height = 120
+        xlim = 60000
+        ylim = 2000
+
+    elif system == 'h2o':
+        bin_width = 225
+        bin_height = 10
+        xlim = 9000
+        ylim = 150
+
     else:
         raise ValueError('not a valid system name')
     
