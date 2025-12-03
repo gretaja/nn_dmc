@@ -32,7 +32,7 @@ def read_xyz_file(filename):
         coordinates.append([float(x), float(y), float(z)])
     
     # Convert to an Nx3 numpy array
-    coordinates_array = np.array(coordinates)*au_to_ang
+    coordinates_array = np.array(coordinates)/au_to_ang
     return coordinates_array
 
 def save_xyz_file(filename, atoms, coordinates):

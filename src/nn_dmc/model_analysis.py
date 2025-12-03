@@ -13,11 +13,11 @@ from matplotlib.colors import LogNorm
 def calc_nn_test_errors(system,model,x_data,y_data):
     if system == 'h5o3':
         input_size = 28
-        hidden_size = 360
+        hidden_size = 180
 
     elif system == 'h7o4':
         input_size = 55
-        hidden_size = 540
+        hidden_size = 270
 
     elif system == 'h9o5':
         input_size = 91
@@ -26,6 +26,18 @@ def calc_nn_test_errors(system,model,x_data,y_data):
     elif system == 'ohh2':
         input_size = 6
         hidden_size = 60
+
+    elif system == 'h11o6':
+        input_size = 136
+        hidden_size = 450
+
+    elif system == 'h13o6':
+        input_size = 171
+        hidden_size = 1020
+
+    elif system == 'h2o':
+        input_size = 3
+        hidden_size = 30
 
     else:
         raise ValueError('not a valid system name')
@@ -81,24 +93,61 @@ def plot_2d_pred_errors(system,model,x_data,y_data):
         bin_height = 50
         xlim = 25000
         ylim = 800
+        x_ticks = None
 
     elif system == 'h7o4':
         bin_width = 850
         bin_height = 60
         xlim = 35000
         ylim = 1000
+        x_ticks = None
 
     elif system == 'h9o5':
         bin_width = 1200
         bin_height = 120
         xlim = 50000
         ylim = 2000
+        x_ticks = None
 
     elif system == 'ohh2':
         bin_width = 250
         bin_height = 15
         xlim = 10000
         ylim = 250
+        x_ticks = None
+
+    elif system == 'h11o6':
+        bin_width = 1400
+        bin_height = 120
+        xlim = 60000
+        ylim = 2000
+        x_ticks = np.arange(0,75000,15000)
+
+    elif system == 'h13o6':
+        bin_width = 1400
+        bin_height = 120
+        xlim = 60000
+        ylim = 2000
+        x_ticks = np.arange(0,75000,15000)
+
+    elif system == 'h2o':
+        bin_width = 225
+        bin_height = 10
+        xlim = 9000
+        ylim = 150
+        x_ticks = None
+
+    elif system == 'h11o6':
+        bin_width = 1400
+        bin_height = 120
+        xlim = 60000
+        ylim = 2000
+
+    elif system == 'h2o':
+        bin_width = 225
+        bin_height = 10
+        xlim = 9000
+        ylim = 150
 
     else:
         raise ValueError('not a valid system name')
@@ -146,6 +195,8 @@ def plot_2d_pred_errors(system,model,x_data,y_data):
     plt.xlabel('E(MOB-ML) (/cm$^{-1}$)',fontsize=16)
     plt.ylabel(r'E(NN) - E(MOB-ML) (/cm$^{-1}$)',fontsize=16)
     plt.ylim(-ylim,ylim)
+    
+    plt.xticks(x_ticks)
 
     plt.show()
 
