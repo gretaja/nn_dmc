@@ -277,7 +277,6 @@ def atom_sorted_CM(molecule_coords,atomic_numbers, full=False, revised=False):
     else:
         return lower_triangles
     
-<<<<<<< HEAD
 def determine_molecule_groups(coords, atom_types, tolerance=0.7):
     """
     Determine molecular groupings using a fixed covalent radius heuristic for O/H atoms only.

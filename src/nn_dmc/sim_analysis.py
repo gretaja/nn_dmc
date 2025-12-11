@@ -207,7 +207,7 @@ def plot_1d_dists(data_path,dist_type,atom_indices,name,cumulative=False,bins=No
 
         if dist_type == 'bond_length':
             dist = analyzer.bond_length(atom_indices[i][0],atom_indices[i][1])
-            x_label_end = 'Distance ($\AA$)'
+            x_label_end = r'Distance ($\AA$)'
         elif dist_type == 'bond_angle':
             dist = analyzer.bond_angle(atom_indices[i][0],atom_indices[i][1],atom_indices[i][2])
             dist = np.rad2deg(dist)
@@ -276,7 +276,7 @@ def plot_mult_dists(systems,data_paths,dist_type,atom_indices,name,
 
             if dist_type == 'bond_length':
                 dist = analyzer.bond_length(atom_indices[p][i][0],atom_indices[p][i][1])
-                x_label_end = 'Distance ($\AA$)'
+                x_label_end = r'Distance ($\AA$)'
             elif dist_type == 'bond_angle':
                 dist = analyzer.bond_angle(atom_indices[p][i][0],atom_indices[p][i][1],atom_indices[i][2])
                 dist = np.rad2deg(dist)
