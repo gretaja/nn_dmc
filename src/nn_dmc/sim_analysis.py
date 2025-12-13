@@ -4,6 +4,7 @@ import numpy as np
 import pyvibdmc as pv
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
+import h5py
 
 def check_for_holes(file_path, threshold):
     """
@@ -399,3 +400,11 @@ def calc_dist_stats(data_paths,dist_type,atom_indices):
 
     return np.mean(exp_list), np.std(exp_list), np.mean(fwhm_list), np.std(fwhm_list)
         
+
+def get_max_wt_wfn(filename):
+    f = h5py.File(filename, "r")
+    cds = f['coords']
+    weights = f['desc_wts']
+    max_ind = np.argmax(weights)
+
+    return cds[max_ind]
