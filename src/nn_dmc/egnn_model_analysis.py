@@ -221,11 +221,11 @@ def plot_2d_pred_errors(ckpt_file,cds_data,y_data):
     
     energies_test, output, test_MAE, average_error = calc_nn_test_errors(ckpt_file,cds_data,y_data)
 
-    test_errors = output.detach().numpy() - energies_test.detach().numpy()
+    test_errors = output - energies_test
 
     fig, ax = plt.subplots()
 
-    h = ax.hist2d(energies_test.detach().numpy(),test_errors,bins=[np.arange(0,xlim+bin_width,bin_width),np.arange(-ylim,ylim+bin_height,bin_height)],norm=LogNorm(vmin=1),cmap = 'viridis')
+    h = ax.hist2d(energies_test,test_errors,bins=[np.arange(0,xlim+bin_width,bin_width),np.arange(-ylim,ylim+bin_height,bin_height)],norm=LogNorm(vmin=1),cmap = 'viridis')
 
     fig.colorbar(h[3], ax=ax)
 
@@ -235,7 +235,7 @@ def plot_2d_pred_errors(ckpt_file,cds_data,y_data):
 
     error_pairs = []
     for i in range(len(test_errors)):
-        error_pairs.append([energies_test.detach().numpy()[i],test_errors[i]])
+        error_pairs.append([energies_test[i],test_errors[i]])
         
     bins = []
     for i in range(len(h[1])-1):
