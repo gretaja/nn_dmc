@@ -5,7 +5,7 @@ Potentials developed for OH<sup>-</sup>(H<sub>2</sub>O)<sub>1-3</sub> and H<sub>
 
 Publications: [**OH<sup>-</sup>(H<sub>2</sub>O)<sub>1-3</sub>**](https://pubs.acs.org/doi/10.1021/acs.jpca.4c08826), [**H<sub>3</sub>O<sup>-</sup>**](https://pubs.acs.org/doi/10.1021/acs.jpca.5c06590)
 
-Dependencies: torch, numpy, matplotlib, pyvibdmc
+Dependencies: torch, numpy, matplotlib, pyvibdmc, h5py
 
 # Contents:
  - nn_training: Python scripts for initializing a feedforward NN (train_nn_model) or equivariant graph NN (train_egnn_model) model for training in a HPC environment using GPUs
@@ -13,6 +13,8 @@ Dependencies: torch, numpy, matplotlib, pyvibdmc
  - model_evaluation: Python scripts for evaluating the trained feedforward NN (nn_potential) or equivariant graph NN (egnn_potential) on-the-fly, like in a production-run DMC simulation
 
  - training_data_collection: Python scripts for the small DMC simulations used to generate training geometries and corresponding potential energies from the MOB-ML reference potential
+
+ - notebooks: example notebook on the OH<sup>-</sup>(H<sub>2</sub>O)<sub>2</sub> system for how to use pyvibdmc functionalities to analyze DMC simulation data (dmc_analysis_h5o3_example), and notebook containing active analysis on the OH<sup>-</sup>(H<sub>2</sub>O)<sub>5</sub> system (h11o6_analysis)
 
  - src/nn_dmc: Python scripts I would like to eventually turn into a pip-installable package for all NN DMC related research tasks. Currently includes:
 
