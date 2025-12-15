@@ -196,11 +196,10 @@ def cart_to_pot_fast(ckpt_file, coords_np, batch_size=1024):
 
     return energies  # convert to a.u.
 
-def calc_nn_test_errors(ckpt_file,cds_data,y_data):
+def calc_nn_test_errors(ckpt_file,cds_data,energy_data):
 
     cds_test = np.load(cds_data)
-    y_test = np.load(y_data)
-    energies_test = 10**y_test - 100
+    energies_test = np.load(energy_data)
 
     output = cart_to_pot_fast(ckpt_file, cds_test)
 
