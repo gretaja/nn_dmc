@@ -155,7 +155,7 @@ class EGNNModelLN(nn.Module):
         energy = per_atom.sum(dim=1, keepdim=True)  # (B,1)
         return energy
 
-def cart_to_pot_fast(ckpt_file, coords_np, batch_size=1024):
+def egnn_cart_to_pot(ckpt_file, coords_np, batch_size=1024):
     """
     Optimized CPU evaluation of geometries in batches.
     coords_np: np.ndarray of shape (N,17,3)
@@ -196,12 +196,12 @@ def cart_to_pot_fast(ckpt_file, coords_np, batch_size=1024):
 
     return energies  # convert to a.u.
 
-def calc_nn_test_errors(ckpt_file,cds_data,energy_data):
+def calc_egnn_test_errors(ckpt_file,cds_data,energy_data):
 
     cds_test = np.load(cds_data)
     energies_test = np.load(energy_data)
 
-    output = cart_to_pot_fast(ckpt_file, cds_test)
+    output = egnn_cart_to_pot(ckpt_file, cds_test)
 
     test_errors = output - energies_test
 
@@ -212,14 +212,14 @@ def calc_nn_test_errors(ckpt_file,cds_data,energy_data):
     return energies_test, output, test_MAE, average_error
 
 
-def plot_2d_pred_errors(ckpt_file,cds_data,y_data):
+def plot_egnn_2d_pred_errors(ckpt_file,cds_data,energy_data):
     bin_width = 1400
     bin_height = 120
     xlim = 60000
     ylim = 2000
     x_ticks = np.arange(0,75000,15000)
     
-    energies_test, output, test_MAE, average_error = calc_nn_test_errors(ckpt_file,cds_data,y_data)
+    energies_test, output, test_MAE, average_error = calc_egnn_test_errors(ckpt_file,cds_data,energy_data)
 
     test_errors = output - energies_test
 
@@ -270,9 +270,9 @@ def plot_2d_pred_errors(ckpt_file,cds_data,y_data):
     print('MAE: {0:0.2f}, average error: {1:0.2f}'.format(test_MAE,average_error))
 
 
-def plot_pred_errors(ckpt_file,cds_data,y_data):
+def plot_egnn_pred_errors(ckpt_file,cds_data,energy_data):
 
-    y_test_regular, output_regular, _, _ = calc_nn_test_errors(ckpt_file,cds_data,y_data)
+    y_test_regular, output_regular, _, _ = calc_egnn_test_errors(ckpt_file,cds_data,energy_data)
 
     plt.rcdefaults()
     plt.rcParams.update({'font.size': 14})

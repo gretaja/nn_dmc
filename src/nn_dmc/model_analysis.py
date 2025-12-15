@@ -87,7 +87,7 @@ def calc_nn_test_errors(system,model,x_data,y_data):
     return y_test_regular, output_regular, test_MAE, average_error
 
 
-def plot_2d_pred_errors(system,model,x_data,y_data):
+def plot_nn_2d_pred_errors(system,model,x_data,y_data):
     if system == 'h5o3':
         bin_width = 600
         bin_height = 50
