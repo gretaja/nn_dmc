@@ -155,18 +155,25 @@ class EGNNModelLN(nn.Module):
         energy = per_atom.sum(dim=1, keepdim=True)  # (B,1)
         return energy
 
-def egnn_cart_to_pot(ckpt_file, coords_np, batch_size=1024):
+def egnn_cart_to_pot(system, ckpt_file, coords_np, batch_size=1024):
     """
     Optimized CPU evaluation of geometries in batches.
     coords_np: np.ndarray of shape (N,17,3)
     Returns: np.ndarray of energies in a.u.
     """
 
-    atom_types = torch.tensor([8.0, 1.0, 1.0, 8.0, 1.0, 1.0,
+    if system == 'h11o6':
+        atom_types = torch.tensor([8.0, 1.0, 1.0, 8.0, 1.0, 1.0,
     8.0, 1.0, 1.0, 8.0, 1.0, 1.0,
     8.0, 1.0, 1.0, 8.0, 1.0], dtype=torch.float32)
+        n_atoms = 17
+    elif system == 'h9o5':
+        atom_types = torch.tensor([8.0, 1.0, 1.0,
+    8.0, 1.0, 1.0, 8.0, 1.0, 1.0,
+    8.0, 1.0, 1.0, 8.0, 1.0], dtype=torch.float32)
+        n_atoms = 14
 
-    model = EGNNModelLN(n_atoms=17, atom_types_list=atom_types, hidden_dim=64, num_layers=3, n_freqs=3, coord_rescale=0.01)
+    model = EGNNModelLN(n_atoms=n_atoms, atom_types_list=atom_types, hidden_dim=64, num_layers=3, n_freqs=3, coord_rescale=0.01)
     ckpt = torch.load(ckpt_file, map_location="cpu")
     model.load_state_dict(ckpt["model_state"])
     model.eval()
@@ -196,12 +203,12 @@ def egnn_cart_to_pot(ckpt_file, coords_np, batch_size=1024):
 
     return energies  # convert to a.u.
 
-def calc_egnn_test_errors(ckpt_file,cds_data,energy_data):
+def calc_egnn_test_errors(system, ckpt_file,cds_data,energy_data):
 
     cds_test = np.load(cds_data)
     energies_test = np.load(energy_data)
 
-    output = egnn_cart_to_pot(ckpt_file, cds_test)
+    output = egnn_cart_to_pot(system, ckpt_file, cds_test)
 
     test_errors = output - energies_test
 
@@ -212,14 +219,21 @@ def calc_egnn_test_errors(ckpt_file,cds_data,energy_data):
     return energies_test, output, test_MAE, average_error
 
 
-def plot_egnn_2d_pred_errors(ckpt_file,cds_data,energy_data):
-    bin_width = 1400
-    bin_height = 120
-    xlim = 60000
-    ylim = 2000
-    x_ticks = np.arange(0,75000,15000)
+def plot_egnn_2d_pred_errors(system,ckpt_file,cds_data,energy_data):
+    if system == 'h11o6':
+        bin_width = 1400
+        bin_height = 120
+        xlim = 60000
+        ylim = 2000
+        x_ticks = np.arange(0,75000,15000)
+    elif system == 'h9o5':
+        bin_width = 1200
+        bin_height = 120
+        xlim = 50000
+        ylim = 2000
+        x_ticks = None
     
-    energies_test, output, test_MAE, average_error = calc_egnn_test_errors(ckpt_file,cds_data,energy_data)
+    energies_test, output, test_MAE, average_error = calc_egnn_test_errors(system,ckpt_file,cds_data,energy_data)
 
     test_errors = output - energies_test
 
