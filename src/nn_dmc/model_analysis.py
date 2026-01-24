@@ -10,7 +10,7 @@ import pyvibdmc as pv
 import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 
-def calc_nn_test_errors(system,model,x_data,y_data):
+def calc_nn_test_errors(system,model,x_data,y_data,means_data=None,stds_data=None,dws_data=None):
     if system == 'h5o3':
         input_size = 28
         hidden_size = 180
@@ -44,8 +44,16 @@ def calc_nn_test_errors(system,model,x_data,y_data):
 
     X_test_read = np.load(x_data)
     y_test_read = np.load(y_data)
-    
-    X_test = torch.tensor(X_test_read, dtype=torch.float32)
+
+    if means_data is not None:
+        means = np.load(means_data)
+        stds = np.load(stds_data)
+        X_test_standardized = (X_test_read - means)/stds
+        X_test = torch.tensor(X_test_standardized, dtype=torch.float32)
+
+    else:
+        X_test = torch.tensor(X_test_read, dtype=torch.float32)
+
     y_test = torch.tensor(y_test_read, dtype=torch.float32)
     y_test_regular = torch.tensor([(10**(i))-100 for i in y_test])
 
@@ -76,18 +84,22 @@ def calc_nn_test_errors(system,model,x_data,y_data):
 
     output_regular = torch.tensor([(10**(j))-100 for j in output])
 
-    MAE = nn.L1Loss()
-
-    test_MAE = MAE(output_regular, y_test_regular)
-
     test_errors = output_regular.detach().numpy() - y_test_regular.detach().numpy()
 
-    average_error = np.mean(test_errors)
+    if dws_data is not None:
+        dws = np.load(dws_data)
+        weighted_errors = test_errors * dws
+        average_error = np.mean(weighted_errors)
+        test_MAE = np.mean(np.abs(weighted_errors))
+
+    else:
+        average_error = np.mean(test_errors)
+        test_MAE = np.mean(np.abs(test_errors))
 
     return y_test_regular, output_regular, test_MAE, average_error
 
 
-def plot_nn_2d_pred_errors(system,model,x_data,y_data):
+def plot_nn_2d_pred_errors(system,model,x_data,y_data,means_data,stds_data,dws_data=None):
     if system == 'h5o3':
         bin_width = 600
         bin_height = 50
@@ -152,7 +164,7 @@ def plot_nn_2d_pred_errors(system,model,x_data,y_data):
     else:
         raise ValueError('not a valid system name')
     
-    y_test_regular, output_regular, test_MAE, average_error = calc_nn_test_errors(system,model,x_data,y_data)
+    y_test_regular, output_regular, test_MAE, average_error = calc_nn_test_errors(system,model,x_data,y_data,means_data,stds_data,dws_data)
 
     test_errors = output_regular.detach().numpy() - y_test_regular.detach().numpy()
 
@@ -203,9 +215,9 @@ def plot_nn_2d_pred_errors(system,model,x_data,y_data):
     print('MAE: {0:0.2f}, average error: {1:0.2f}'.format(test_MAE,average_error))
 
 
-def plot_pred_errors(system,model,x_data,y_data):
+def plot_pred_errors(system,model,x_data,y_data,means_data,stds_data,dws_data):
 
-    y_test_regular, output_regular, test_MAE, average_error = calc_nn_test_errors(system,model,x_data,y_data)
+    y_test_regular, output_regular, test_MAE, average_error = calc_nn_test_errors(system,model,x_data,y_data,means_data,stds_data,dws_data)
 
     plt.rcdefaults()
     plt.rcParams.update({'font.size': 14})

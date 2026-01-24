@@ -201,7 +201,7 @@ def egnn_cart_to_pot(system, ckpt_file, coords_np, batch_size=1024):
             # store energies in-place
             energies[start:end] = (y_norm * sigma + mu).numpy()
 
-    return energies  # convert to a.u.
+    return energies # convert to a.u.
 
 def calc_egnn_test_errors(system, ckpt_file,cds_data,energy_data):
 
@@ -218,8 +218,23 @@ def calc_egnn_test_errors(system, ckpt_file,cds_data,energy_data):
 
     return energies_test, output, test_MAE, average_error
 
+def weighted_test_errors(system, ckpt_file,cds_data,energy_data,dws_data):
+    cds_test = np.load(cds_data)
+    energies_test = np.load(energy_data)
+    dws_test = np.load(dws_data)
 
-def plot_egnn_2d_pred_errors(system,ckpt_file,cds_data,energy_data):
+    output = egnn_cart_to_pot(system, ckpt_file, cds_test)
+
+    test_errors = output - energies_test
+
+    weighted_errors = test_errors * dws_test
+
+    weighted_average = np.mean(weighted_errors)
+    weighted_MAE = np.mean(np.abs(weighted_errors))
+
+    return energies_test, output, weighted_MAE, weighted_average
+
+def plot_egnn_2d_pred_errors(system,ckpt_file,cds_data,energy_data,weights=None):
     if system == 'h11o6':
         bin_width = 1400
         bin_height = 120
@@ -233,7 +248,10 @@ def plot_egnn_2d_pred_errors(system,ckpt_file,cds_data,energy_data):
         ylim = 2000
         x_ticks = None
     
-    energies_test, output, test_MAE, average_error = calc_egnn_test_errors(system,ckpt_file,cds_data,energy_data)
+    if weights == None:
+        energies_test, output, test_MAE, average_error = calc_egnn_test_errors(system,ckpt_file,cds_data,energy_data)
+    else:
+        energies_test, output, test_MAE, average_error = weighted_test_errors(system,ckpt_file,cds_data,energy_data,weights)
 
     test_errors = output - energies_test
 
